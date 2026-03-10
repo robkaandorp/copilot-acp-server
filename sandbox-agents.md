@@ -28,3 +28,7 @@ This is an Ubuntu 24.04-based development container. The working directory is `/
 - All project files go in `/copilot-home` (the working directory).
 - Use `uv` over `pip` for Python projects.
 - Use `gh` for GitHub operations (issues, PRs, releases) — it is pre-authenticated.
+- Build caches are redirected to native filesystems to avoid v9fs limitations:
+  - Zig: `ZIG_LOCAL_CACHE_DIR=/tmp/zig-cache`, `ZIG_GLOBAL_CACHE_DIR=/root/.cache/zig`
+  - Cargo: `CARGO_TARGET_DIR=/tmp/cargo-target`
+  - These are set automatically — no manual configuration needed.

@@ -39,6 +39,11 @@ WORKDIR /copilot-home
 COPY sandbox-agents.md /opt/copilot-env/AGENTS.md
 VOLUME /copilot-home /root/.copilot
 
+# Build caches on native filesystem to avoid v9fs atomic rename issues
+ENV ZIG_LOCAL_CACHE_DIR=/tmp/zig-cache \
+    ZIG_GLOBAL_CACHE_DIR=/root/.cache/zig \
+    CARGO_TARGET_DIR=/tmp/cargo-target
+
 EXPOSE 8000
 ENV COPILOT_CUSTOM_INSTRUCTIONS_DIRS=/opt/copilot-env
 ENTRYPOINT ["copilot", "--add-dir", "/copilot-home", "--acp", "--port", "8000"]
