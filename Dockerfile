@@ -36,6 +36,7 @@ RUN npm install -g @github/copilot
 
 RUN mkdir -p /copilot-home
 WORKDIR /copilot-home
+COPY sandbox-agents.md /copilot-home/AGENTS.md
 VOLUME /copilot-home /root/.copilot
 
 EXPOSE 8000
