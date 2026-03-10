@@ -34,10 +34,11 @@ RUN ZIG_VERSION=$(curl -fsSL https://ziglang.org/download/index.json | jq -r 'to
 # Copilot CLI
 RUN npm install -g @github/copilot
 
-RUN mkdir -p /copilot-home
+RUN mkdir -p /copilot-home /opt/copilot-env
 WORKDIR /copilot-home
-COPY sandbox-agents.md /copilot-home/AGENTS.md
+COPY sandbox-agents.md /opt/copilot-env/AGENTS.md
 VOLUME /copilot-home /root/.copilot
 
 EXPOSE 8000
+ENV COPILOT_CUSTOM_INSTRUCTIONS_DIRS=/opt/copilot-env
 ENTRYPOINT ["copilot", "--add-dir", "/copilot-home", "--acp", "--port", "8000"]
