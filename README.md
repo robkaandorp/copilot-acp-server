@@ -79,6 +79,46 @@ docker compose down
 docker compose build --no-cache
 ```
 
+## Connecting with acpx
+
+[acpx](https://www.npmjs.com/package/acpx) is a headless CLI client for the Agent Client Protocol. It only supports stdio-based agents, so a relay script is included to bridge stdio to the TCP server.
+
+```bash
+# Install acpx globally
+npm install -g acpx
+
+# One-shot prompt
+acpx --agent "node tcp-relay.js" exec "what can you do?"
+
+# Interactive session
+acpx --agent "node tcp-relay.js" sessions new
+acpx --agent "node tcp-relay.js" "fix the tests"
+```
+
+To connect to a remote host or non-default port:
+
+```bash
+acpx --agent "node tcp-relay.js 192.168.1.50 8000" exec "hello"
+```
+
+You can also configure it permanently in `.acpxrc.json` (project-level) or `~/.acpx/config.json` (global):
+
+```json
+{
+  "agents": {
+    "copilot-remote": {
+      "command": "node tcp-relay.js"
+    }
+  }
+}
+```
+
+Then use it by name:
+
+```bash
+acpx copilot-remote exec "summarize this repo"
+```
+
 ## Resetting State
 
 To start fresh, delete the sandbox directory and recreate it:
