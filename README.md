@@ -58,6 +58,7 @@ Environment variables can be set in `.env` (secrets) or `default.env` (non-sensi
 | `GH_TOKEN` | *(required)* | GitHub PAT with Copilot permissions |
 | `COPILOT_MODEL` | `claude-opus-4.6` | Model for the Copilot agent to use |
 | `COPILOT_AUTO_UPDATE` | `true` | Automatically update the Copilot CLI package |
+| `COPILOT_ALLOW_ALL` | `true` | Auto-approve all tool/permission requests (safe — the container is a sandbox) |
 | `COPILOT_SANDBOX` | `./sandbox` | Path to the sandbox directory |
 
 ## Common Commands
