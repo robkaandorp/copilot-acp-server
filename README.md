@@ -83,16 +83,14 @@ docker compose build --no-cache
 
 [acpx](https://www.npmjs.com/package/acpx) is a headless CLI client for the Agent Client Protocol. It only supports stdio-based agents, so a relay script is included to bridge stdio to the TCP server.
 
+> **Note:** Only one-shot mode (`exec`) is supported. Persistent sessions rely on acpx's local cwd-based session routing, which is incompatible with a remote TCP server where the client and agent have different filesystems.
+
 ```bash
 # Install acpx globally
 npm install -g acpx
 
 # One-shot prompt
 acpx --agent "node tcp-relay.js" exec "what can you do?"
-
-# Interactive session
-acpx --agent "node tcp-relay.js" sessions new
-acpx --agent "node tcp-relay.js" "fix the tests"
 ```
 
 To connect to a remote host or non-default port:
