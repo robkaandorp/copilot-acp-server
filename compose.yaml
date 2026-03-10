@@ -3,7 +3,7 @@ name: copilot-acp-server
 services:
   copilot-acp:
     build: .
-    image: copilot-acp-server:dev
+    image: robkaandorp/copilot-acp-server:dev
     container_name: copilot-acp
     ports:
       - "8000:8000"

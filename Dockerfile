@@ -1,15 +1,38 @@
-FROM ubuntu
+FROM ubuntu:24.04
 
-# Set timezone environment variables before installing tzdata
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Amsterdam
 
-RUN apt-get update && apt-get install -y build-essential locales file python3 python3-pip git curl gh ca-certificates gnupg
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs && node -v && npm -v
+# Core dev tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential git curl wget unzip zip jq \
+    openssh-client ca-certificates gnupg \
+    python3 python3-pip python3-venv \
+    ripgrep fd-find tree file \
+    gh xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js LTS
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Rust (via rustup, available for all users)
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH="/usr/local/cargo/bin:$PATH"
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+
+# uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Zig (latest stable via ziglang.org index)
+RUN ZIG_VERSION=$(curl -fsSL https://ziglang.org/download/index.json | jq -r 'to_entries[] | select(.key != "master") | .key' | sort -V | tail -1) \
+    && curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz" | tar -xJ -C /usr/local \
+    && ln -s /usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig /usr/local/bin/zig
+
+# Copilot CLI
 RUN npm install -g @github/copilot
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /copilot-home
 WORKDIR /copilot-home
