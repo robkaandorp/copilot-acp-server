@@ -1,6 +1,9 @@
 # Copilot ACP Server
 
-A Docker-based setup that runs the [GitHub Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli) as an ACP (Agent Communication Protocol) server. This allows external tools and clients to interact with the Copilot coding agent over HTTP.
+A Docker-based setup that runs the [GitHub Copilot CLI](https://docs.github.com/copilot/concepts/agents/about-copilot-cli) as a server in two modes:
+
+- **ACP mode** (default) — Agent Communication Protocol over HTTP, for [acpx](https://www.npmjs.com/package/acpx) and other ACP clients.
+- **Headless mode** — JSON-RPC over TCP, for the [Copilot SDKs](https://github.com/github/copilot-sdk) (Node.js, Python, Go, .NET).
 
 ## Prerequisites
 
@@ -49,6 +52,18 @@ docker compose up --build
 
 The ACP server will be available at `http://localhost:8000`.
 
+To run in headless mode (for Copilot SDK clients):
+
+```bash
+COPILOT_MODE=headless docker compose up --build
+```
+
+Or set it in your `.env` file:
+
+```env
+COPILOT_MODE=headless
+```
+
 ## Configuration
 
 Environment variables can be set in `.env` (secrets) or `default.env` (non-sensitive defaults):
@@ -59,6 +74,8 @@ Environment variables can be set in `.env` (secrets) or `default.env` (non-sensi
 | `COPILOT_MODEL` | `claude-opus-4.6` | Model for the Copilot agent to use |
 | `COPILOT_AUTO_UPDATE` | `true` | Automatically update the Copilot CLI package |
 | `COPILOT_ALLOW_ALL` | `true` | Auto-approve all tool/permission requests (safe — the container is a sandbox) |
+| `COPILOT_MODE` | `acp` | Server mode: `acp` (HTTP/ACP) or `headless` (TCP/JSON-RPC for SDKs) |
+| `COPILOT_PORT` | `8000` | Port the server listens on |
 | `COPILOT_SANDBOX` | `./sandbox` | Path to the sandbox directory |
 
 ## Common Commands
@@ -80,7 +97,41 @@ docker compose down
 docker compose build --no-cache
 ```
 
-## Connecting with acpx
+## Connecting with Copilot SDKs (headless mode)
+
+When running in headless mode (`COPILOT_MODE=headless`), the server speaks JSON-RPC over TCP and is compatible with the [Copilot SDKs](https://github.com/github/copilot-sdk).
+
+```python
+# Python
+from github_copilot_sdk import CopilotClient
+
+client = CopilotClient(cli_url="tcp://localhost:8000")
+```
+
+```typescript
+// Node.js / TypeScript
+import { CopilotClient } from "@github/copilot-sdk";
+
+const client = new CopilotClient({ cliUrl: "tcp://localhost:8000" });
+```
+
+```csharp
+// .NET
+using GitHub.Copilot.SDK;
+
+var client = new CopilotClient(new() { CliUrl = "tcp://localhost:8000" });
+```
+
+```go
+// Go
+import "github.com/github/copilot-sdk/go"
+
+client, _ := copilot.NewClient(copilot.WithCliURL("tcp://localhost:8000"))
+```
+
+See the [Copilot SDK docs](https://github.com/github/copilot-sdk/blob/main/docs/getting-started.md#connecting-to-an-external-cli-server) for full details on connecting to an external CLI server.
+
+## Connecting with acpx (ACP mode)
 
 [acpx](https://www.npmjs.com/package/acpx) is a headless CLI client for the Agent Client Protocol. It only supports stdio-based agents, so a relay script is included to bridge stdio to the TCP server.
 

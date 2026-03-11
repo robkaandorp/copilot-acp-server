@@ -46,4 +46,12 @@ ENV ZIG_LOCAL_CACHE_DIR=/tmp/zig-cache \
 
 EXPOSE 8000
 ENV COPILOT_CUSTOM_INSTRUCTIONS_DIRS=/opt/copilot-env
-ENTRYPOINT ["copilot", "--add-dir", "/copilot-home", "--acp", "--port", "8000"]
+
+# COPILOT_MODE: "acp" (default) or "headless"
+#   acp      → ACP protocol over HTTP (for acpx / ACP clients)
+#   headless → JSON-RPC over TCP   (for Copilot SDKs: Node, Python, Go, .NET)
+ENV COPILOT_MODE=acp
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
