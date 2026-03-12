@@ -76,6 +76,7 @@ Environment variables can be set in `.env` (secrets) or `default.env` (non-sensi
 | `COPILOT_ALLOW_ALL` | `true` | Auto-approve all tool/permission requests (safe — the container is a sandbox) |
 | `COPILOT_MODE` | `acp` | Server mode: `acp` (HTTP/ACP) or `headless` (TCP/JSON-RPC for SDKs) |
 | `COPILOT_PORT` | `8000` | Port the server listens on |
+| `COPILOT_LOG_LEVEL` | `info` | Log verbosity: `none`, `error`, `warning`, `info`, `debug`, `all` |
 | `COPILOT_SANDBOX` | `./sandbox` | Path to the sandbox directory |
 
 ## Common Commands
