@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client ca-certificates gnupg \
     python3 python3-pip python3-venv \
     ripgrep fd-find tree file \
-    gh xz-utils \
+    gh xz-utils libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Node.js LTS
@@ -25,6 +25,14 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --de
 # uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:$PATH"
+
+# .NET 10 SDK
+RUN curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh \
+    && chmod +x /tmp/dotnet-install.sh \
+    && /tmp/dotnet-install.sh --channel 10.0 --install-dir /usr/share/dotnet \
+    && ln -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet \
+    && rm /tmp/dotnet-install.sh
+ENV DOTNET_ROOT=/usr/share/dotnet
 
 # Zig (latest stable via ziglang.org index)
 RUN ZIG_VERSION=$(curl -fsSL https://ziglang.org/download/index.json | jq -r 'to_entries[] | select(.key != "master") | .key' | sort -V | tail -1) \
